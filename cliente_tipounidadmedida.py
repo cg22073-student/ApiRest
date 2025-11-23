@@ -43,7 +43,6 @@ class MainWindow(QMainWindow):
         form_group = QGroupBox("Datos de TipoUnidadMedida")
         form_layout = QFormLayout()
         form_group.setLayout(form_layout)
-
         self.id_spin = QSpinBox()
         self.id_spin.setMinimum(0)
         self.id_spin.setMaximum(100)

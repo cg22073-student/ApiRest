@@ -328,7 +328,6 @@ class MainWindow(QMainWindow):
         if confirm != QMessageBox.Yes:
             return
 
-
         url = f"{BASE_URL}/{RESOURCE_PATH}/{id_val}"
         try:
             resp = requests.delete(url, timeout=REQUEST_TIMEOUT)
