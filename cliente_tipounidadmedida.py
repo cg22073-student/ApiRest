@@ -18,9 +18,8 @@ from PySide6.QtWidgets import (
     QSpinBox
 )
 
-# Ajusta la URL base según tu despliegue
 BASE_URL = "http://localhost:9080/InventarioWebAppPRN335-1.0-SNAPSHOT/Resources/v1"
-REQUEST_TIMEOUT = 3  # segundos de espera máximo para cada llamada HTTP
+REQUEST_TIMEOUT = 3
 
 
 class MainWindow(QMainWindow):
@@ -29,33 +28,27 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Cliente REST - TipoUnidadMedida (PySide6)")
         self.resize(900, 600)
 
-        # ---- Widgets principales ----
         central = QWidget()
         self.setCentralWidget(central)
 
         main_layout = QHBoxLayout()
         central.setLayout(main_layout)
 
-        # Panel izquierdo: formulario + botones
         left_layout = QVBoxLayout()
         main_layout.addLayout(left_layout, 2)
 
-        # Panel derecho: salida de texto
         right_layout = QVBoxLayout()
         main_layout.addLayout(right_layout, 3)
 
-        # ==== Formulario TipoUnidadMedida ====
         form_group = QGroupBox("Datos de TipoUnidadMedida")
         form_layout = QFormLayout()
         form_group.setLayout(form_layout)
 
-        # ID (para buscar / actualizar / eliminar)
         self.id_spin = QSpinBox()
         self.id_spin.setMinimum(0)
-        self.id_spin.setMaximum(999999999)
+        self.id_spin.setMaximum(100)
         form_layout.addRow(QLabel("ID:"), self.id_spin)
 
-        # Campos
         self.nombre_edit = QLineEdit()
         form_layout.addRow(QLabel("Nombre:"), self.nombre_edit)
 
@@ -70,8 +63,6 @@ class MainWindow(QMainWindow):
         form_layout.addRow(QLabel(""), self.activo_check)
 
         left_layout.addWidget(form_group)
-
-        # ==== Botones de acciones ====
         buttons_layout = QVBoxLayout()
 
         self.btn_listar = QPushButton("Listar todos")
@@ -89,25 +80,19 @@ class MainWindow(QMainWindow):
 
         left_layout.addLayout(buttons_layout)
 
-        # ==== Área de salida ====
         self.output = QTextEdit()
         self.output.setReadOnly(True)
         right_layout.addWidget(QLabel("Salida / Respuestas del servidor:"))
         right_layout.addWidget(self.output)
 
-        # ==== Conexión de señales ====
         self.btn_listar.clicked.connect(self.listar_todos)
         self.btn_buscar.clicked.connect(self.buscar_por_id)
         self.btn_crear.clicked.connect(self.crear)
         self.btn_actualizar.clicked.connect(self.actualizar)
         self.btn_eliminar.clicked.connect(self.eliminar)
 
-        # Cuando se termina de editar el ID, intentamos buscar automáticamente
         self.id_spin.editingFinished.connect(self.buscar_por_id_auto)
 
-    # ---------------------------
-    # Funciones Auxiliares
-    # ---------------------------
     def mostrar_error(self, mensaje, detalle=None):
         msg = QMessageBox(self)
         msg.setIcon(QMessageBox.Critical)
@@ -127,9 +112,6 @@ class MainWindow(QMainWindow):
     def append_output(self, text):
         self.output.append(text)
 
-    # ---------------------------
-    # Operaciones REST
-    # ---------------------------
     def listar_todos(self):
         url = f"{BASE_URL}/tipounidadmedidas/all"
         try:
@@ -169,7 +151,6 @@ class MainWindow(QMainWindow):
                 str(e)
             )
 
-    # Función interna reutilizable para búsqueda
     def _buscar_por_id(self, mostrar_mensajes: bool):
         id_val = self.id_spin.value()
         if id_val <= 0:
@@ -190,7 +171,6 @@ class MainWindow(QMainWindow):
                 self.append_output(f"Unidad base: {item.get('unidadBase')}")
                 self.append_output(f"Comentarios: {item.get('comentarios')}")
 
-                # Rellenar formulario
                 self.nombre_edit.setText(item.get("nombre") or "")
                 self.unidad_base_edit.setText(item.get("unidadBase") or "")
                 self.comentarios_edit.setText(item.get("comentarios") or "")
@@ -232,11 +212,9 @@ class MainWindow(QMainWindow):
                     str(e)
                 )
 
-    # Usada por el botón "Buscar por ID"
     def buscar_por_id(self):
         self._buscar_por_id(mostrar_mensajes=True)
 
-    # Usada cuando el usuario edita el spin de ID
     def buscar_por_id_auto(self):
         self._buscar_por_id(mostrar_mensajes=False)
 
@@ -352,7 +330,6 @@ class MainWindow(QMainWindow):
             self.mostrar_info("Debes indicar un ID válido para eliminar.")
             return
 
-        # Confirmación
         confirm = QMessageBox.question(
             self,
             "Confirmar eliminación",
@@ -370,7 +347,6 @@ class MainWindow(QMainWindow):
             if resp.status_code == 204:
                 self.append_output("✔ Registro eliminado correctamente.")
                 self.mostrar_info("Registro eliminado correctamente.")
-                # limpiar formulario
                 self.nombre_edit.clear()
                 self.unidad_base_edit.clear()
                 self.comentarios_edit.clear()
@@ -385,7 +361,7 @@ class MainWindow(QMainWindow):
                     f"Código HTTP: {resp.status_code}\n{resp.text}"
                 )
         except requests.exceptions.ConnectTimeout:
-            self.mostrar_error(
+            self.mostrar_error (
                 "Tiempo de espera agotado.",
                 "El servidor REST no respondió a tiempo (timeout)."
             )

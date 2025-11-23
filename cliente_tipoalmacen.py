@@ -344,7 +344,7 @@ class MainWindow(QMainWindow):
                     f"No se encontró TipoAlmacen con id {id_val}."
                 )
             else:
-                self.mostrar_error(
+                self.mostrar_error (
                     "Error al eliminar.",
                     f"Código HTTP: {resp.status_code}\n{resp.text}"
                 )
