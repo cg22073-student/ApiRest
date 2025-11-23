@@ -325,7 +325,6 @@ class MainWindow(QMainWindow):
             f"¿Seguro que deseas eliminar el registro con ID {id_val}?",
             QMessageBox.Yes | QMessageBox.No
         )
-
         if confirm != QMessageBox.Yes:
             return
 
